@@ -163,31 +163,29 @@ st.title("Dashboard Data Pasar Tahun 2020 - 2025")
 st.markdown("---")
 
 st.markdown("""
-### Selamat Datang!
-
-Aplikasi ini digunakan untuk menganalisis data tagihan pasar tahun **2020 - 2025**.
+### Selamat Datang di Sistem Dashboard PT Pasar Surya!
+Aplikasi ini digunakan untuk memvisualisasikan data tagihan pasar dari tahun **2020 - 2025**.
 
 ### Cara Menggunakan:
+1. **Upload Data** — Silahkan buka menu *Upload Data* untuk upload file Excel mentah.
+2. **Preprocessing** — Sistem akan otomatis menggabungkan dan membersihkan data.
+3. **Simpan ke Database** — Data akan otomatis tersimpan di Database.
+4. **Dashboard** — Buka menu *Dashboard* untuk melihat visualisasi & filter.
 
-1. **Upload Data** — Buka menu *Upload Data* untuk upload file Excel mentah
-2. **Preprocessing** — Sistem akan otomatis menggabungkan dan membersihkan data
-3. **Simpan ke Database** — Data akan otomatis tersimpan di Supabase (via COPY, cepat!)
-4. **Dashboard** — Buka menu *Dashboard* untuk melihat visualisasi & filter
-
-Data yang sudah pernah diupload **tidak perlu diupload ulang** — otomatis dimuat dari database.
+Catatan: Data yang sudah pernah diupload **tidak perlu diupload ulang** dan otomatis dimuat dari database.
 """)
 
 if st.session_state.get("master_df") is not None:
     df = st.session_state["master_df"]
     st.success(
-        f"Data siap! Total **{len(df):,} baris** dari "
+        f"Data sudah tersedia di database!! Total **{len(df):,} baris** dari "
         f"**{df['Nama Pasar'].nunique()} pasar** dan "
         f"**{df['Pedagang'].nunique():,} pedagang**."
     )
-    st.info("Buka menu **Dashboard** di sidebar kiri untuk melihat visualisasi.")
+    st.info("Silahkan buka menu **Dashboard** di sidebar kiri untuk melihat visualisasi.")
 
-    with st.expander("Preview data (10 baris pertama)"):
-        st.dataframe(df.head(10), use_container_width=True)
+    # with st.expander("Preview data (10 baris pertama)"):
+    #     st.dataframe(df.head(10), use_container_width=True)
 
 elif "load_error" in st.session_state:
     st.error(f"Gagal memuat data dari database: {st.session_state['load_error']}")
