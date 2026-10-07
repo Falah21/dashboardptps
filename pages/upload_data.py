@@ -14,12 +14,12 @@ from utils.helper import format_angka, format_rupiah
 st.set_page_config(page_title="Upload Data", layout="wide")
 
 st.title("Upload & Preprocessing Data")
-st.markdown("Upload file Excel mentah dari folder `DATA 2010-sekarang`.")
+st.markdown("Upload file Excel mentah dari folder `DATA 2020-sekarang`.")
 
 st.info("""
 **Aturan nama file:**
 - Format: `<kode_cabang> <kode_jenis> <nama_file>.xlsx`
-- Contoh: `100 A januari 2020.xlsx`, `200 T maret.xlsx`
+- Contoh: `100 A 2020.xlsx`, `200 T 2021.xlsx`
 - Kode cabang: `100`, `200`, `300`
 - Kode jenis: `A` (Air), `T` (Tempat), `L` (Listrik)
 """)
@@ -46,26 +46,26 @@ st.markdown("---")
 # =========================================================
 # MUAT DARI DATABASE
 # =========================================================
-st.markdown("### Muat Data dari Database")
-st.caption("Klik untuk load data dari Supabase tanpa upload ulang.")
+# st.markdown("### Muat Data dari Database")
+# st.caption("Klik untuk load data dari Supabase tanpa upload ulang.")
 
-col_load1, col_load2 = st.columns([1, 3])
-with col_load1:
-    if st.button("Muat dari Supabase", type="secondary", use_container_width=True):
-        with st.spinner("Memuat data dari database..."):
-            try:
-                st.cache_data.clear()
-                df_db = load_from_supabase()
-                if df_db.empty:
-                    st.warning("Database kosong.")
-                else:
-                    st.session_state["master_df"] = df_db
-                    st.success(f"Berhasil load **{len(df_db):,} baris**!")
-                    st.rerun()
-            except Exception as e:
-                st.error(f"Gagal load dari Supabase: {e}")
+# col_load1, col_load2 = st.columns([1, 3])
+# with col_load1:
+#     if st.button("Muat dari Supabase", type="secondary", use_container_width=True):
+#         with st.spinner("Memuat data dari database..."):
+#             try:
+#                 st.cache_data.clear()
+#                 df_db = load_from_supabase()
+#                 if df_db.empty:
+#                     st.warning("Database kosong.")
+#                 else:
+#                     st.session_state["master_df"] = df_db
+#                     st.success(f"Berhasil load **{len(df_db):,} baris**!")
+#                     st.rerun()
+#             except Exception as e:
+#                 st.error(f"Gagal load dari Supabase: {e}")
 
-st.markdown("---")
+# st.markdown("---")
 
 # =========================================================
 # UPLOAD FILE BARU
@@ -108,12 +108,12 @@ if uploaded_files:
     # Kalau semua duplikat
     if not file_baru and duplikat:
         st.error(
-            "Semua file yang Anda upload sudah ada di database. "
+            "File yang Anda upload sudah ada di database. "
             "Tidak ada yang perlu disimpan. "
-            "Kalau ingin replace, gunakan mode **Reset Total** di bawah."
+            "Jika ingin me-replace, gunakan mode **Reset Total** di bawah."
         )
 
-    st.markdown("---")
+    # st.markdown("---")
 
     # ===== MODE SIMPAN =====
     st.markdown("#### Mode Simpan")
@@ -136,7 +136,7 @@ if uploaded_files:
     if replace_all:
         st.warning(
             "**PERINGATAN:** Anda memilih RESET TOTAL. "
-            "Semua data lama akan DIHAPUS. Tidak bisa dibatalkan!"
+            "Semua data lama akan DIHAPUS. Tindakan tidak bisa dibatalkan!"
         )
 
     # ===== TOMBOL PROSES =====
