@@ -379,7 +379,7 @@ with col_b:
         # Reindex dengan fill_value=0 (Nilai numerik, aman)
         subset = (
             subset.set_index("Pasar_label")
-            .reindex([f"Pasar {p}" for p in top10_list], fill_value=0)
+            .reindex([f"Pasar {p}" for p in top5_list], fill_value=0)
             .reset_index()
         )
 
