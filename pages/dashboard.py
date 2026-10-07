@@ -615,7 +615,7 @@ df["Tgl Bayar_dt"] = pd.to_datetime(df["Tgl Bayar"], format="%d-%m-%Y", errors="
 # JUDUL
 # =========================================================
 st.markdown(
-    '<div class="main-title">Dashboard Data Pasar Tahun 2010 - 2026</div>',
+    '<div class="main-title">Dashboard Data Pasar Tahun 2020 - 2025</div>',
     unsafe_allow_html=True
 )
 
