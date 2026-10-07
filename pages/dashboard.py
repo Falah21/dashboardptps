@@ -337,37 +337,58 @@ with col_b:
     st.markdown('<div class="section-title">Nilai Tagihan per Pasar (Top 5)</div>',
                 unsafe_allow_html=True)
 
-    top10_ids = (
+    # Ambil Top 5 pasar berdasarkan total nilai
+    top5_df = (
         filtered.groupby("Nama Pasar", as_index=False)["Nilai"]
         .sum()
         .sort_values("Nilai", ascending=False)
         .head(5)
-        .sort_values("Nilai", ascending=False)
     )
-    top10_list = top10_ids["Nama Pasar"].astype(str).tolist()
+    top5_list = top5_df["Nama Pasar"].astype(str).tolist()
 
-    df_top = filtered[filtered["Nama Pasar"].astype(str).isin(top10_list)].copy()
+    # Filter hanya untuk Top 5 pasar
+    df_top = filtered[filtered["Nama Pasar"].astype(str).isin(top5_list)].copy()
 
+    # Agregasi: Pasar x Jenis Tagihan
     grouped_pasar = (
         df_top.groupby(["Nama Pasar", "Jenis Tagihan"], as_index=False)["Nilai"]
         .sum()
     )
+
+    # ⭐ Konversi ke string biasa (BUKAN pyarrow) supaya bisa di-reindex
     grouped_pasar["Nama Pasar"] = grouped_pasar["Nama Pasar"].astype(str)
     grouped_pasar["Pasar_label"] = "Pasar " + grouped_pasar["Nama Pasar"]
+
+    # ⭐ Konversi kolom ke object string biasa
+    grouped_pasar["Pasar_label"] = grouped_pasar["Pasar_label"].astype(object)
+    grouped_pasar["Jenis Tagihan"] = grouped_pasar["Jenis Tagihan"].astype(object)
+    grouped_pasar["Nilai"] = pd.to_numeric(grouped_pasar["Nilai"], errors="coerce").fillna(0)
 
     fig_pasar = go.Figure()
 
     for jenis in urutan_jenis:
-        subset = grouped_pasar[grouped_pasar["Jenis Tagihan"] == jenis]
+        subset = grouped_pasar[grouped_pasar["Jenis Tagihan"] == jenis].copy()
+
+        # ⭐ Konversi jadi pandas string biasa SEBELUM reindex
+        subset["Pasar_label"] = subset["Pasar_label"].astype("string[python]")
+        subset["Nilai"] = pd.to_numeric(subset["Nilai"], errors="coerce").fillna(0)
+
+        # Target index
+        target_labels = [f"Pasar {p}" for p in top5_list]
+
+        # Reindex dengan fill_value=0 (Nilai numerik, aman)
         subset = (
             subset.set_index("Pasar_label")
-            .reindex([f"Pasar {p}" for p in top10_list], fill_value=0)
+            .reindex(target_labels, fill_value=0)
             .reset_index()
         )
 
+        # Pastikan Nilai numerik
+        subset["Nilai"] = pd.to_numeric(subset["Nilai"], errors="coerce").fillna(0)
+
         fig_pasar.add_trace(go.Bar(
             name=jenis,
-            x=subset["Pasar_label"],
+            x=subset["Pasar_label"].astype(str),
             y=subset["Nilai"],
             marker_color=warna_jenis[jenis],
             text=[format_angka_singkat(v) if v > 0 else "" for v in subset["Nilai"]],
@@ -400,12 +421,14 @@ with col_b:
             tickfont=dict(size=10, color="#374151"),
             type="category",
             categoryorder="array",
-            categoryarray=[f"Pasar {p}" for p in top10_list],
+            categoryarray=[f"Pasar {p}" for p in top5_list],
             tickangle=-30,
         ),
-        yaxis=dict(showgrid=True, gridcolor="#f1f5f9",
-                   tickfont=dict(size=11, color="#6b7280"),
-                   tickformat=".2s"),
+        yaxis=dict(
+            showgrid=True, gridcolor="#f1f5f9",
+            tickfont=dict(size=11, color="#6b7280"),
+            tickformat=".2s",
+        ),
         font=dict(family="Arial, sans-serif"),
     )
 
