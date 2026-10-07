@@ -374,12 +374,12 @@ with col_b:
         subset["Nilai"] = pd.to_numeric(subset["Nilai"], errors="coerce").fillna(0)
 
         # Target index
-        target_labels = [f"Pasar {p}" for p in top5_list]
+        # target_labels = [f"Pasar {p}" for p in top5_list]
 
         # Reindex dengan fill_value=0 (Nilai numerik, aman)
         subset = (
             subset.set_index("Pasar_label")
-            .reindex(target_labels, fill_value=0)
+            .reindex([f"Pasar {p}" for p in top10_list], fill_value=0)
             .reset_index()
         )
 
